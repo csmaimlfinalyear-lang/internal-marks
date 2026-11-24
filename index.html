@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSM-B and CSM-C Internal Marks</title>
+<style>
+:root{--bg:#f5f6fa;--card:#fff;--text:#1d2433;--muted:#6b7385;--accent:#2f5bea;--bad:#c93a3a;--line:#e3e6ee;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12151c;--card:#1b2030;--text:#e8ebf3;--muted:#9aa3b8;--accent:#7b9bff;--bad:#ff7a7a;--line:#2b3247;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;min-height:100vh;display:flex;justify-content:center;padding:24px 16px}
+.wrap{width:100%;max-width:560px}
+h1{font-size:1.35rem;margin:8px 0 4px}
+.sub{color:var(--muted);margin:0 0 18px;font-size:.92rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px}
+.row{display:flex;gap:8px}
+input{flex:1;min-width:0;padding:12px 14px;font-size:1rem;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text)}
+button{padding:12px 20px;font-size:1rem;border:0;border-radius:10px;background:var(--accent);color:#fff;cursor:pointer}
+.sec{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:0 0 6px}
+.name{font-size:1.2rem;font-weight:600;margin:0 0 12px}
+h2{font-size:.85rem;color:var(--muted);margin:14px 0 2px;text-transform:uppercase;letter-spacing:.05em}
+table{width:100%;border-collapse:collapse}
+td{padding:8px 0;border-top:1px solid var(--line)}
+td:last-child{text-align:right;font-weight:600}
+.err{color:var(--bad)}
+.flag{color:var(--bad)}
+.note{color:var(--muted);font-size:.82rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>📘 Internal Marks, CSM-B and CSM-C</h1>
+<p class="sub">Lords Institute of Engineering and Technology · B.E. VII-Sem · 2026-27<br>Enter your Roll No. to see your own marks.</p>
+<div class="card"><div class="row">
+<input id="roll" placeholder="Roll No. (12 digits or last 3 digits)" inputmode="numeric" autocomplete="off">
+<button id="go">View</button></div></div>
+<div id="out"></div>
+<p class="note">NS = Not Submitted · AB = Absent · — = marks not available yet</p>
+</div>
+<script>
+// Format: roll|name|A1|A2|A3|AltA1|AltA2|AltA3|CIE1|CIE2
+const RAW = `160923748061|ABDUL SAMAD ABED QURESHI|NS|||AB|7|8|17|15
+160923748062|MOHAMMED ABDUL RAHEEM|NS|9|9|7|||9|9
+160923748063|MOHD ABDUL PARVEZ|8|9||7|7||16|18
+160923748064|AFFAAN MOHAMMED JAWEED|8|9||5|8||16|14
+160923748065|MOHAMMED FOUZAAN SHAKEEL|NS|8||AB|9||18|9
+160923748066|MOHD MOHATASHAM ALI|NS|||AB|||0|8
+160923748067|MOHD ABDUL MUQSITH|NS|9|10|7|7||15|6
+160923748068|MOHAMMED AFZAL AYAAN|7|8||6|8||16|13
+160923748069|SYED ALTAF UDDIN|10|10||9|9||17|19
+160923748070|SHAIK SOHEL KHAN|7|10||AB|7||16|16
+160923748071|MOHAMMED ABDUL IBRAHIM|8|10||7|8||15|15
+160923748072|HABIBA BEGUM|8|10||9|10||19|19
+160923748073|SYED FAYEZUDDIN|7|10||6|8||11|10
+160923748074|LAVANI MOHAMMED AMEEN KHAN|5|||6|||13|12
+160923748075|MOHD RAMEEZ|AB|9||AB|7|9|0|8
+160923748076|ABAIR AHMED KHAN|7|9||7|7||19|17
+160923748077|MOHAMMED ANAS SIDDIQUI|10|10||9|8||19|19
+160923748078|MOHAMMED SHAHZAD ANWAR|8|||7|||15|15
+160923748079|SYED AFFANUDDIN|8|10||8|8||15|13
+160923748080|MOHAMMED SAAD UZ ZAMAN|NS|10||6|8||12|6
+160923748081|MOHAMMED MUJEEB HUSSAIN|10|9||8|9||18|18
+160923748082|SHAIK MUDASSIR UDDIN|NS|9||AB|7|8|0|ABSENT
+160923748083|MOHAMMED IBRAHIM ALI KHAN|7|||AB|||0|ABSENT
+160923748084|SYED SHEHZAAN NADEEM|7|9||7|8||14|15
+160923748085|MOHAMMED MUJAHED|10|9||8|8||17|17
+160923748086|SYEDA SUFIYA FATIMA|10|10||9|10||19|19
+160923748087|MOHAMMED MUSTAFA AYUB|7|8||6|8||13|14
+160923748088|YUSRA SULTANA ABDUL BARI|7|10||7|10||20|19
+160923748089|MOHAMMAD AMAAN MOHD SHAHID QURESHI|6|10||7|8||17|15
+160923748090|MIRZA DANISH BAIG|8|9||6|7||11|13
+160923748091|ANAS KHALEED BIN AFEEF|6|9||6|8||12|12
+160923748092|A DHEERAJ REDDY|NS|||AB|6||9|9
+160923748093|MOHAMMED ISMAIL OMAIR|9|8||6|6||12|12
+160923748094|MOHD RAFAN ALI|8|||6|7||15|11
+160923748096|YASEEN AHMED KHAN|NS|9||6|8||13|14
+160923748097|MOHAMMED HAMZA UNNAIS|8|8||8|8||18|17
+160923748098|MOHAMMED ABDUL QUAVI|9|8||8|7||14|13
+160923748099|MOHAMMED SAIF AHMED|10|10||9|10||19|19
+160923748100|MOHAMMED FARDEEN|7|9||7|9||1|10
+160923748101|MOHD SUJAAN SAMI|6|8||6|||1|4
+160923748102|SYED AFSAR HUSSAINI|10|9||9|10||18|20
+160923748103|SAAQIB AHMED|NS|10||AB|||0|8
+160923748104|MUKARRAM ALI KHAN|8|9||8|8||15|19
+160923748105|YASEEN KHAN|8|9||8|9||17|17
+160923748106|SHAIK MUDASSIR|8|9||6|7||11|17
+160923748107|SHAIK FAISAL FAREED|NS|||AB|||5|9
+160923748108|MOHD ABDUL RAHMAN|8|8||7|8||15|10
+160923748109|TASKEEN BEGUM|8|10||8|10||18|18
+160923748110|MOHAMMED SHAHZAD|8|9||AB|7||12|11
+160923748111|MOHD SAMEER|10|9||8|10||15|17
+160923748112|MOHAMMAD ABDUL SALMAN|NS|||AB|||0|8
+160923748113|AUSAF MAQBOOL SYED|8|||AB|8|9|10|10
+160923748114|MIR ASHRAF ALI|6|8||7|||15|13
+160923748115|BALAJI|8|7||AB|7|8|0|14
+160923748116|MOHAMMED ZAIN UL ABDEEN|10|10||9|10||19|18
+160923748117|SYEDA AMTUL KAREEM SHEEMA|9|8||7|8||17|18
+160923748118|SUMAIYA NAHID|7|10||8|9||14|13
+160923748119|HAFSA KHANAM|8|10||9|10||18|20
+160923748120|SARA FATIMA|8|10||8|9||9|17`;
+const RAW_C = `160923748121|MOHAMMED  SAFIUDDIN|10|10||8|8||14|19
+160923748122|SYED OMER FAROOQ|7|9||AB|||9|11
+160923748123|MOHAMMED ZAINUDDIN FAROOQUI|10|10||8||8|15|0
+160923748124|MOHAMMED MUBEEN AHMED|9|9||8|7||14|14
+160923748125|MOHAMMAD SAAD KHAN|7|8||8|8||5|9
+160923748126|DANISH ESHAN AHMED KHAN|8|9||6|||0|14
+160923748127|MOHAMMED FAYAZ AHMED|7|9||7|||10|8
+160923748128|MOHAMMED WASIL HUSSAIN HYDRI|8|9||7|||2|7
+160923748129|SYED ALI UDDIN NOUSHEER|7|8||6|6||8|8
+160923748130|MOHAMMED ABDUL RAHEEM WAHHAJ|8|8||7|7||9|8
+160923748131|SYED MOAZAM|7|8||8|7|8|12|16
+160923748132|SYED OMER ALI|9|9|9|6|8||8|11
+160923748133|ADIL AHMED SALEH AMER SHUJAA|8|9||6|7||9|8
+160923748134|SYED SALAH UDDIN|10|10||9|8||13|11
+160923748135|MOHAMMED SABATH ABDUL RAHEEM|8|9||AB||8|10|9
+160923748136|SYED EHATESHAM UDDIN|8|7||8|9|8|16|14
+160923748137|MOHAMMED FAIZAN AHMED|7|8||7|8||10|12
+160923748139|NAEF MOHAMMED ABDUL MATEEN|8|||8|||0|3
+160923748140|SYED MUZZAMMIL PASHA QUADRI|10|9||9|7||17|17
+160923748141|BILAL AHMED|8|||8|9||8|11
+160923748143|AYAN SHAIKH|NS|||AB|||0|Absent
+160923748144|SHAHZAN KHAN|8|9|8|AB|7|8|12|12
+160923748145|MOHAMMED ABDUL MUJEEB|7|8||8|||0|8
+160923748147|MOHAMMED AFFAN|9|9||8|7||7|8
+160923748148|WAQAS MOHAMMED ALI|8|8||AB|||7|9
+160923748149|MIR UMAR ALI|8|10||7|7||9|9
+160923748150|MOHD JUNAID|10|10||7|6||16|16
+160923748151|ABDUL LATEEF SAYEED|7|8||6|7||8|8
+160923748153|MOHAMMAD ABDUL SAMAD|8|8|7|AB|7||14|14
+160923748154|YOUSUF SHANAWAZ MOHAMMED|10|10||9|10||18|17
+160923748155|MOHAMMED MAHMOOD SHAREEF|7|9||7|7||7|8
+160923748156|MOHAMMED ABDUL SAMAD SIDDIQUI|9|9||8|7||18|18
+160923748157|MOHAMMED RAHEEL|8|||6|8||13|9
+160923748158|HAMED ATHER QURESHI|8|9||AB|8|6|14|12
+160923748159|MOHAMED JUNAID PASHA|7|8||7|8||7|4
+160923748160|MOAMMED KHAJA MOINUDDIN|7|9||7|7||7|5
+160923748161|MOHAMMED FAROOQ ALI SAIF|NS|||AB|||0|Absent
+160923748162|SHAIK SAAD AHMED|7|9||AB|||9|6
+160923748163|MOHAMMED SHAHRIYAR HUSSAIN|8|8||7|7|8|10|8
+160923748164|MOHAMMED SAQLEN UMAN|8|8|8|7|7||4|7
+160923748166|MOHAMMED FAIZAN MUZAFFAR|7|9||AB|7||4|11
+160923748167|HABEEB SAAD|8|9||7|6||1|5
+160923748168|MOHAMMED KHUBAIB UDDIN|8|9||7|8||7|9
+160923748169|MOHAMMED ABDUL WASAY KHAN|NS|8||AB|||0|Absent
+160923748170|MOHAMMED ARBAZ NAWAZ KHAN|10|10||9|10||18|16
+160923748171|MOHD FARHAAN|8|9||8|8||11|7
+160923748172|MOHAMMED AYYAN SHAIKH|8|9|8|AB|7||4|6
+160923748173|MOHD ALI|8|9||6|6||4|5
+160923748175|MOHAMMED FAQRUDDIN|8|9||7|7||8|8
+160923748176|SYED SIDDIQUE SHAH|8|||AB|6||1|6
+160923748301|ABDUL BARI OMAR|8|9||7|8||8|10
+160923748302|ARSALAAN KHAN|9|10||6|7||9|10
+160923748303|MOHAMMED SHAHID AFIRIDI|8|10|9|8|9||6|10
+160923748304|MOHD HAMDAN|9|10||7|7||14|11
+160923748305|SHOAIB ABDULLAH AHMED|8|9||9|8||14|16
+160923748306|SYED NAWAZ ALI|10|9||8|7||13|12
+160923748307|SYED UMAIZ ALI|9|9||8|7||7|9
+160922748136|MOHD OSMAN KHAN||9|9||||0|11`;
+const LABELS = ["Assignment 1","Assignment 2","Assignment 3","Alternative Assessment 1","Alternative Assessment 2","Alternative Assessment 3","CIE-1","CIE-2"];
+const GROUPS = [["Assignments",0,3],["Alternative Assessments",3,6],["CIE",6,8]];
+const parse = (raw, branch) => raw.split("\n").map(l => { const p = l.split("|"); return {branch, roll:p[0], name:p[1], m:p.slice(2,10)}; });
+const STUDENTS = [...parse(RAW,"CSM-B"), ...parse(RAW_C,"CSM-C")];
+
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function find(q){
+  const exact = STUDENTS.filter(s => s.roll === q);
+  if (exact.length) return exact;
+  if (q.length === 3) return STUDENTS.filter(s => s.roll.endsWith(q));
+  return [];
+}
+function fmt(v){
+  v = (v || "").trim();
+  if (!v) return "—";
+  return /^(NS|AB|ABSENT)$/i.test(v) ? `<span class="flag">${esc(v.toUpperCase())}</span>` : esc(v);
+}
+function show(){
+  const q = document.getElementById("roll").value.replace(/\s/g,"");
+  const out = document.getElementById("out");
+  if (!q) { out.innerHTML = '<div class="card err">Please enter a Roll No. first.</div>'; return; }
+  const hits = find(q); const s = hits.length === 1 ? hits[0] : null;
+  if (!s) { out.innerHTML = '<div class="card err">' + (hits.length > 1 ? 'More than one student matches these last 3 digits. Please enter the full 12-digit Roll No.' : 'No record found for this Roll No. Please check and try again.') + '</div>'; return; }
+  let html = `<div class="card"><p class="sec">${s.branch} · Roll No. ${esc(s.roll)}</p><p class="name">${esc(s.name)}</p>`;
+  GROUPS.forEach(([title,a,b]) => {
+    html += `<h2>${title}</h2><table>`;
+    for (let i=a;i<b;i++) html += `<tr><td>${LABELS[i]}</td><td>${fmt(s.m[i])}</td></tr>`;
+    html += `</table>`;
+  });
+  out.innerHTML = html + `</div>`;
+}
+document.getElementById("go").onclick = show;
+document.getElementById("roll").addEventListener("keydown", e => { if (e.key === "Enter") show(); });
+</script>
+</body>
+</html>
